@@ -4,3 +4,6 @@
 .actionButton{
     margin: 5px;
 }
+.selected{
+    border: 1px solid red;
+}
