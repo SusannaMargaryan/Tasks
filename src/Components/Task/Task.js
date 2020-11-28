@@ -1,10 +1,10 @@
-import React from "react";
+import React,{PureComponent} from "react";
 import {Button, Card} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import styles from './TasksStyle.module.css';
 
-class  Tasks extends React.Component{
+class  Tasks extends PureComponent{
     state={
         checked: false
     };

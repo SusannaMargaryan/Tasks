@@ -1,9 +1,9 @@
-import React from 'react';
+import React,{PureComponent} from 'react';
 import idGenerator from "../../helpers/idGenerator";
 import styles from './ToDoListStyle.module.css';
 import {Container,Row,Col,FormControl,InputGroup,Button} from 'react-bootstrap';
 import Tasks from "../Task/Task";
-class ToDoList extends React.Component {
+class ToDoList extends PureComponent{
     state = {
         inputValue: '',
         tasks: [],
