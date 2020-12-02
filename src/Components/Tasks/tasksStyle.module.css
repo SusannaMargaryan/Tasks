@@ -1,9 +1,9 @@
 .task{
     margin: 15px auto;
 }
-.actionButton{
-    margin: 5px;
-}
 .selected{
     border: 1px solid red;
+}
+.actionButton{
+    margin: 5px;
 }

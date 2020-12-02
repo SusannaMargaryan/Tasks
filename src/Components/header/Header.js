@@ -1,10 +1,11 @@
 import React,{memo} from 'react';
-import {Col,Navbar,Nav,Form,FormControl,Button,NavDropdown} from "react-bootstrap";
+import styles from  './headerStyle.module.css';
+import {Col,Navbar,Nav,Form,FormControl,Button,NavDropdown} from "react-bootstrap"
 function Header() {
     return(
       <>
           <Col>
-              <Navbar bg="primary"  variant="dark">
+              <Navbar bg="primary"  variant="dark" className={styles.header}>
                   <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
                   <Navbar.Toggle aria-controls="basic-navbar-nav" />
                   <Navbar.Collapse id="basic-navbar-nav">

@@ -1,123 +1,117 @@
 import React,{PureComponent} from 'react';
+import styles from './toDoList.module.css';
+import {Container,Row,Col} from "react-bootstrap";
+import AddInputTasks from "../AddInputTasks/AddInputTasks";
+import Tasks from "../Tasks/Tasks";
+import Confirm from "../Confirm";
 import idGenerator from "../../helpers/idGenerator";
-import styles from './ToDoListStyle.module.css';
-import {Container,Row,Col,FormControl,InputGroup,Button} from 'react-bootstrap';
-import Tasks from "../Task/Task";
+import EditTaskModal from "../EditTaskModal";
 class ToDoList extends PureComponent{
-    state = {
-        inputValue: '',
-        tasks: [],
-        selectedTasks: new Set()
+    state={
+      tasks: [],
+      selectedTasks: new Set(),
+      showConfirm: false,
+      editTasks: null
     };
-
-    handleChange = (event)=>{
-        this.setState({
-            inputValue: event.target.value
-        });
-    };
-    handleKeyDown = (event)=> {
-        if (event.key === 'Enter'){
-            this.addTasks();
-        }
-    };
-    addTasks = () => {
-        const {inputValue}=this.state;
-        if (!inputValue){
-            return;
-        }
-        const newTasks = {
-            text: inputValue,
+    addTask=(value)=>{
+        const newTask = {
+            text: value,
             _id: idGenerator()
-        }
-        const tasks=[newTasks,...this.state.tasks];
+        };
+        const tasks=[...this.state.tasks];
+        tasks.push(newTask);
         this.setState({
-            tasks: tasks,
-            inputValue: ''
+            tasks: tasks
         });
     };
     removeTask = (taskId)=>{
-        const newTasks = this.state.tasks.filter(
-            task => task._id!==taskId);
+        const newTasks = this.state.tasks.filter((task) =>{
+           return task._id!==taskId;
+        });
         this.setState({
             tasks: newTasks
         });
-    };
-    handleCheck = (taskId) =>{
+    }
+    handleCheck=(taskId)=>{
         const selectedTasks=new Set(this.state.selectedTasks);
-        if (selectedTasks.has(taskId)){
+        if(selectedTasks.has(taskId)){
             selectedTasks.delete(taskId);
-        }else{
+        }else {
             selectedTasks.add(taskId);
-        }
+        };
         this.setState({
-            selectedTasks
+            selectedTasks: selectedTasks
         });
     };
-    handleRemove = () =>{
-        let  tasks = [...this.state.tasks]
-        this.state.selectedTasks.forEach((id)=>{
-           tasks=tasks.filter((task)=> task._id!==id);
+    removeSelected = () =>{
+        let tasks = [...this.state.tasks];
+        this.state.selectedTasks.forEach((id) => {
+            tasks = tasks.filter((task) => task._id!== id);
         });
         this.setState({
             tasks,
-            selectedTasks: new Set()
+            selectedTasks: new Set(),
+            showConfirm: false
+        });
+    }
+    toggleConfirm = () =>{
+        this.setState({
+            showConfirm: !this.state.showConfirm
         });
     };
+    toggleEditModal=(task)=>{
+        this.setState({
+           editTasks: task
+        });
+    }
     render() {
-        const {inputValue,tasks,selectedTasks}=this.state;
-        const tasksArray=tasks.map((task)=>{
+        const {tasks,selectedTasks,showConfirm,editTasks}= this.state;
+        const taskArray = tasks.map((task) => {
             return(
-                <Col
-                    key={task._id}
-                    xs={12} sm={8} md={6} lg={4} xl={2}>
+                <Col key={task._id} xs={12} sm={6} md={4} lg={3} xl={2}>
                     <Tasks
                         data={task}
-                        onRemove={()=>this.removeTask(task._id)}
-                        onCheck={this.handleCheck}
-                        disabled={!!selectedTasks.size}
+                        onRemove = {this.removeTask}
+                        onCheck = { this.handleCheck }
+                        disabled = {!!selectedTasks.size}
+                        onEdit={this.toggleEditModal}
                     />
                 </Col>
             );
         });
-        return (
-            <div className={styles.todo}>
-                <Container>
-                    <Row className="justify-content-center">
-                        <Col xs={12} sm={10} md={8} lg={6} xl={4}>
-                            <InputGroup className={styles.input}>
-                                <FormControl
-                                    placeholder="Add new Tasks"
-                                    aria-label="Add new Tasks"
-                                    aria-describedby="basic-addon2"
-                                    onChange={this.handleChange}
-                                    value={inputValue}
-                                    onKeyDown={this.handleKeyDown}
+        return(
+            <>
+                <div className={styles}>
+                    <Container>
+                        <Row className="justify-content-center">
+                            <Col xs={12} sm={10} md={8} lg={6}>
+                                <AddInputTasks
+                                    onAdd={this.addTask}
                                     disabled={!!selectedTasks.size}
+                                    toggle={this.toggleConfirm}
                                 />
-                                <InputGroup.Append>
-                                    <Button
-                                        variant="outline-primary"
-                                        onClick={this.addTasks}
-                                        disabled={!inputValue}
-                                    >Add</Button>
-                                </InputGroup.Append>
-                            </InputGroup>
-                        </Col>
-                    </Row>
-                    <Row>
-                        {tasksArray}
-                    </Row>
-                    <Row className="justify-content-center">
-                        <Col xs={4}>
-                            <Button
-                                variant="outline-danger"
-                                onClick={this.handleRemove}
-                                disabled={!selectedTasks.size}
-                            >Selected Items delete</Button>
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
+                            </Col>
+                        </Row>
+                        <Row>{taskArray}</Row>
+                    </Container>
+                    {
+                        showConfirm &&
+                        <Confirm
+                            onSubmit = {this.removeSelected}
+                            onClose = {this.toggleConfirm}
+                            count = {selectedTasks.size}
+                        />
+                    }
+                    {
+                        !!editTasks &&
+                            <EditTaskModal
+                                data={editTasks}
+                                onSave={(task)=>console.log('task',task)}
+                                onClose={()=>this.toggleEditModal(null)}
+                            />
+                    }
+                </div>
+            </>
         );
     }
 }
