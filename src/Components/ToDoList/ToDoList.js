@@ -64,6 +64,17 @@ class ToDoList extends PureComponent{
            editTasks: task
         });
     }
+    handleSaveTask = (editedTasks)=>{
+        const tasks=[...this.state.tasks];
+        const foundTaskIndex=tasks.findIndex((task)=>
+            task._id===editedTasks._id
+        );
+        tasks[foundTaskIndex]=editedTasks;
+        this.setState({
+           tasks: tasks,
+           editTasks: null
+        });
+    }
     render() {
         const {tasks,selectedTasks,showConfirm,editTasks}= this.state;
         const taskArray = tasks.map((task) => {
@@ -106,7 +117,7 @@ class ToDoList extends PureComponent{
                         !!editTasks &&
                             <EditTaskModal
                                 data={editTasks}
-                                onSave={(task)=>console.log('task',task)}
+                                onSave={this.handleSaveTask}
                                 onClose={()=>this.toggleEditModal(null)}
                             />
                     }
